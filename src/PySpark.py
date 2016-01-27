@@ -1,11 +1,13 @@
 import sys
 import os
 import shutil 
+import re
 from pyspark import SparkContext
 from pyspark.mllib.clustering import KMeans
 from pyspark.mllib.evaluation import MulticlassMetrics
-from pyspark.mllib.classification import LogisticRegressionWithLBFGS
+from pyspark.mllib.classification import LogisticRegressionWithLBFGS, NaiveBayes, NaiveBayesModel
 from pyspark.mllib.util import MLUtils
+from pyspark.mllib.linalg import Vectors
 from pyspark.mllib.regression import LabeledPoint, LinearRegressionWithSGD, LinearRegressionModel
 from pyspark.sql import SQLContext
 from pyspark.sql import DataFrame
@@ -39,10 +41,13 @@ def main():
 		#shutil.rmtree(dumpFilePath)
 		#hdfs.delete_file_dir(dumpFilePath)
 		
-	if(model_name == "LinearRegression"):
+	if model_name == "LinearRegression":
 		LinearRegression(loadTrainingFilePath)
 
-	elif(model_name == "KMeans"):
+	elif model_name == "NaiveBayes":
+		Naive_Bayes(loadTrainingFilePath)
+
+	elif model_name == "KMeans":
 		# Load and parse the data
 		data = sc.textFile(loadTrainingFilePath)
 		parsedData = data.map(lambda line: array([float(x) for x in line.split(' ')]))
@@ -60,7 +65,7 @@ def main():
 		#df = SQLContext.createDataFrame(rdd,['model_name','res_path', 'WSSSE'])
 		#df.toJSON().saveAsTextFile(dumpFilePath)
 
-	elif(model_name == "LogisticRegression"):
+	elif model_name == "LogisticRegression":
 		# Load training data in LIBSVM format
 		data = MLUtils.loadLibSVMFile(sc, loadTrainingFilePath)
 		
@@ -161,5 +166,35 @@ def LinearRegression(filename):
 	# Save and load model
 	#model.save(sc, "myModelPath")
 	#sameModel = LinearRegressionModel.load(sc, "myModelPath")
+
+# Naive Bayes helper function:
+def parseLine(line):
+    parts = line.split(',')
+    label = float(parts[0])
+    features = Vectors.dense([float(x) for x in parts[1].split(' ')])
+    return LabeledPoint(label, features)
+
+
+def Naive_Bayes(filename):
+	data = sc.textFile(filename).map(parseLine)
+
+	# Split data aproximately into training (60%) and test (40%)
+	training, test = data.randomSplit([0.6, 0.4], seed=0)
+
+	# Train a naive Bayes model.
+	model = NaiveBayes.train(training, 1.0)
+
+	# Make prediction and test accuracy.
+	predictionAndLabel = test.map(lambda p: (model.predict(p.features), p.label))
+	accuracy = 1.0 * predictionAndLabel.filter(lambda (x, v): x == v).count() / test.count()
+
+	# Output the results:
+	print "***************************************"
+	print 'Accuracy =' + str(accuracy)
+	print "***************************************"
+
+	# Save and load model
+	#model.save(sc, "target/tmp/myNaiveBayesModel")
+	#sameModel = NaiveBayesModel.load(sc, "target/tmp/myNaiveBayesModel")
 
 main()	
