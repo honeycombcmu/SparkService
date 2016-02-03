@@ -34,6 +34,9 @@ def main():
 
 	print sys.argv[1]
 
+	##test##
+	#readLocalFile("/Users/jacobliu/SparkService/data/sample_libsvm_data.txt")
+
 	#if the directory already exists, delete it
 	#ifExisted = subprocess.call(["hdfs","dfs","-test","-d",hdfsFilePath])
 	#if ifExisted == 0:
@@ -150,6 +153,14 @@ def main():
 		#clusters.save(sc, "myModel")
 		#sameModel = KMeansModel.load(sc, "myModel")
 
+#Read from local file, sample test read a txt file and output the columns
+def readLocalFile(filename):
+	with open(filename, 'r') as f:
+		for line in f.readlines():
+			for words in line.strip().split(" "):
+				print words
+
+
 # Load and parse the data
 def parsePoint(line):
     values = [float(x) for x in line.replace(',', ' ').split(' ')]
@@ -202,7 +213,7 @@ def Naive_Bayes(filename):
 	#sameModel = NaiveBayesModel.load(sc, "target/tmp/myNaiveBayesModel")
 
 def Random_Forest(filename):
-	
+
 	filename = "/Users/jacobliu/SparkService/data/sample_libsvm_data.txt"
 	# Load and parse the data file into an RDD of LabeledPoint.
 	data = MLUtils.loadLibSVMFile(sc, filename)
