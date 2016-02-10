@@ -1,6 +1,7 @@
-# SparkTeam
+# SparkService
 Version 2.0
 
+FEATURES:
 1.Start spark via the command line with parameters, the input
 parameters are intput/output files path.
 
@@ -8,9 +9,11 @@ parameters are intput/output files path.
 
 3.Save result as JSON into output path
 
-4.Support different machine learning models(KMeans, Logistic Regression).
+4.Support different machine learning models:
+   
+   LinearRegression, NaiveBayes, RandomForest, KMeans, LogisticRegression, SVM
 
-INSTRUCTION:
+SETUP INSTRUCTION:
 
 1. Download Spark from :http://spark.apache.org/downloads.html (version:1.5.2)
    please choose the approriate package type according to Hadoop version.
