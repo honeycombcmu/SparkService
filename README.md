@@ -1,6 +1,8 @@
 # SparkService
 Version 2.0
 
+[Port assignment] (https://github.com/bicCluster/docs/wiki/Port-Assignments)
+
 FEATURES:
 
 1.Start spark via the command line with parameters, the input
