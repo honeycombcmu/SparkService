@@ -9,6 +9,7 @@ from pyspark.mllib.tree import RandomForest, RandomForestModel
 from pyspark.mllib.classification import LogisticRegressionWithLBFGS, NaiveBayes, NaiveBayesModel
 from pyspark.mllib.util import MLUtils
 from pyspark.mllib.linalg import Vectors
+from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
 from pyspark.mllib.regression import LabeledPoint, LinearRegressionWithSGD, LinearRegressionModel
 from pyspark.sql import SQLContext
 from pyspark.sql import DataFrame
@@ -47,6 +48,9 @@ def main():
 		
 	if model_name == "LinearRegression":
 		LinearRegression(loadTrainingFilePath)
+	
+	elif model_name == "ALS":
+		Alternating_Least_Squares(loadTrainingFilePath)
 
 	elif model_name == "NaiveBayes":
 		Naive_Bayes(loadTrainingFilePath)
@@ -239,5 +243,28 @@ def Random_Forest(filename):
 	# Save and load model
 	#model.save(sc, "target/tmp/myRandomForestClassificationModel")
 	#sameModel = RandomForestModel.load(sc, "target/tmp/myRandomForestClassificationModel")
+
+def Alternating_Least_Squares(filename):
+	# Load and parse the data
+	filename = "/Users/jacobliu/SparkService/data/ALS_test.data"
+	data = sc.textFile(filename)
+	ratings = data.map(lambda l: l.split(','))\
+	    .map(lambda l: Rating(int(l[0]), int(l[1]), float(l[2])))
+
+	# Build the recommendation model using Alternating Least Squares
+	rank = 10
+	numIterations = 10
+	model = ALS.train(ratings, rank, numIterations)
+
+	# Evaluate the model on training data
+	testdata = ratings.map(lambda p: (p[0], p[1]))
+	predictions = model.predictAll(testdata).map(lambda r: ((r[0], r[1]), r[2]))
+	ratesAndPreds = ratings.map(lambda r: ((r[0], r[1]), r[2])).join(predictions)
+	MSE = ratesAndPreds.map(lambda r: (r[1][0] - r[1][1])**2).mean()
+	print("Mean Squared Error = " + str(MSE))
+
+	# Save and load model
+	#model.save(sc, "target/tmp/myCollaborativeFilter")
+	#sameModel = MatrixFactorizationModel.load(sc, "target/tmp/myCollaborativeFilter")
 
 main()	
