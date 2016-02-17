@@ -1,24 +1,22 @@
 from pyspark.mllib.classification import SVMWithSGD, SVMModel
 from pyspark.mllib.regression import LabeledPoint
 
-# Load and parse the data
-def parsePoint(line):
-    values = [float(x) for x in line.split(' ')]
-    return LabeledPoint(values[0], values[1:])
+TRAINING_FILE = sys.argv[1]
+TEST_FILE = sys.argv[2]
 
-loadTrainingFilePath = sys.argv[1]
-
-data = sc.textFile(loadTrainingFilePath)
-parsedData = data.map(parsePoint)
+# Load and parse the data file into an RDD of LabeledPoint.
+trainingData = MLUtils.loadLibSVMFile(sc, TRAINING_FILE)
+testData = MLUtils.loadLibSVMFile(sc, TEST_FILE)
 
 # Build the model
-model = SVMWithSGD.train(parsedData, iterations=100)
+model = SVMWithSGD.train(trainingData, iterations=100)
 
 # Evaluating the model on training data
-labelsAndPreds = parsedData.map(lambda p: (p.label, model.predict(p.features)))
-trainErr = labelsAndPreds.filter(lambda (v, p): v != p).count() / float(parsedData.count())
+predictions = model.predict(testData.map(lambda x: x.features))
+labelsAndPredictions = testData.map(lambda p: (p.label).zip(predictions)
+testErr = labelsAndPreds.filter(lambda (v, p): v != p).count() / float(testData.count())
 print("Training Error = " + str(trainErr))
 
 # Save and load model
-model.save(sc, "myModelPath")
-sameModel = SVMModel.load(sc, "myModelPath")
+# model.save(sc, "myModelPath")
+# sameModel = SVMModel.load(sc, "myModelPath")

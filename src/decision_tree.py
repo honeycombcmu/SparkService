@@ -3,8 +3,8 @@ from pyspark.mllib.tree import DecisionTree, DecisionTreeModel
 from pyspark.mllib.util import MLUtils
 from pyspark.mllib.evaluation import BinaryClassificationMetrics
 
-TRAINING_FILE = 'a3a.txt'
-TEST_FILE = 'a3a.t'
+TRAINING_FILE = sys.argv[1]
+TEST_FILE = sys.argv[2]
 
 # Load and parse the data file into an RDD of LabeledPoint.
 trainingData = MLUtils.loadLibSVMFile(sc, TRAINING_FILE)
