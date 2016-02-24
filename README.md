@@ -1,41 +1,44 @@
 # SparkService
 Version 2.0
 
-[Port assignment] (https://github.com/bicCluster/docs/wiki/Port-Assignments)
+### FEATURES:
 
-FEATURES:
-
-1.Start spark via the command line with parameters, the input
+1. Start spark via the command line with parameters, the input
 parameters are intput/output files path.
 
-2.Use spark to train a machine learning model, and make predictions.
+2. Use spark to train a machine learning model, and make predictions.
 
-3.Save result as JSON into output path
+3. Save result as JSON into output path
 
-4.Support different machine learning models:
+### Supported machine learning models:
    
-   LinearRegression, NaiveBayes, RandomForest, KMeans, LogisticRegression, SVM
+* LinearRegression
+* NaiveBayes
+* RandomForest
+* KMeans
+* LogisticRegression
+* SVM
+* Decision Tree
 
-SETUP INSTRUCTION:
+### SETUP INSTRUCTION:
 
-1. Download Spark from :http://spark.apache.org/downloads.html (version:1.5.2)
-   please choose the approriate package type according to Hadoop version.
+1. Download Spark from [Official Website](http://spark.apache.org/downloads.html) (latest version:1.6.0). Please choose the appropriate package type according to Hadoop version.
 
 2. To build Spark and its example programs, run:
-   build/mvn
+   ``build/mvn``
 
 3. Install python 2.7(should also support Python 3)
 
 4. Login Cluster: 
-   ssh honeycomb@128.2.7.38 (password: ask teammates)
+   ``ssh honeycomb@128.2.7.38`` (password: ask teammates)
 
 5. Copy files into CLuster local host: 
    
-   scp source_file_name honeycomb@128.2.7.38:/home/honeycomb/SparkTeam
+   ``scp source_file_name honeycomb@128.2.7.38:/home/honeycomb/SparkTeam``
 
    e.g:
 
-   scp /Users/jacobliu/PySpark.py honeycomb@128.2.7.38:/home/honeycomb/SparkTeam
+   ``scp /Users/jacobliu/PySpark.py honeycomb@128.2.7.38:/home/honeycomb/SparkTeam``
    
 6. Put files into HDFS:
    
@@ -43,7 +46,7 @@ SETUP INSTRUCTION:
    
    e.g:
    
-   hdfs dfs -put /home/honeycomb/SparkTeam/sample_multiclass_classification_data_test.txt /user/spark/input
+   ``hdfs dfs -put /home/honeycomb/SparkTeam/sample_multiclass_classification_data_test.txt /user/spark/input``
 
 7. Put PySpark.py and train/test dataset into HDFS and run command line:
    
@@ -51,9 +54,9 @@ SETUP INSTRUCTION:
    
    e.g:
    
-  /bin/spark-submit /home/honeycomb/SparkTeam/PySpark.py /user/spark/input/sample_multiclass_classification_data.txt /user/spark/input/sample_multiclass_classification_data_test.txt  /user/spark/out/
+    ``/bin/spark-submit /home/honeycomb/SparkTeam/PySpark.py /user/spark/input/sample_multiclass_classification_data.txt /user/spark/input/sample_multiclass_classification_data_test.txt  /user/spark/out/``
 
-Resource:
+### Resources:
 
 1. Deploy Spark: http://spark.apache.org/docs/latest/programming-guide.html
 
