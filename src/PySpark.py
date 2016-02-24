@@ -5,16 +5,17 @@ import re
 from pyspark import SparkContext
 from pyspark.mllib.clustering import KMeans
 from pyspark.mllib.evaluation import MulticlassMetrics
-from pyspark.mllib.tree import RandomForest, RandomForestModel
 from pyspark.mllib.classification import LogisticRegressionWithLBFGS, NaiveBayes, NaiveBayesModel
 from pyspark.mllib.util import MLUtils
 from pyspark.mllib.linalg import Vectors
 from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
 from pyspark.mllib.regression import LabeledPoint, LinearRegressionWithSGD, LinearRegressionModel
+from pyspark.mllib.tree import RandomForest, RandomForestModel
 from pyspark.sql import SQLContext
 from pyspark.sql import DataFrame
 from numpy import array
-from math import sqrt
+import math
+from pyspark.mllib.regression import IsotonicRegression, IsotonicRegressionModel
 import subprocess
 
 # Evaluate clustering by computing Within Set Sum of Squared Errors
@@ -48,7 +49,10 @@ def main():
 		
 	if model_name == "LinearRegression":
 		LinearRegression(loadTrainingFilePath)
-	
+
+	elif model_name == "IsotonicRegression":
+		Isotonic_Regression(loadTrainingFilePath)
+
 	elif model_name == "ALS":
 		Alternating_Least_Squares(loadTrainingFilePath)
 
@@ -218,7 +222,7 @@ def Naive_Bayes(filename):
 
 def Random_Forest(filename):
 
-	filename = "/Users/jacobliu/SparkService/data/sample_libsvm_data.txt"
+	filename = "/Users/Jacob/SparkService/data/sample_libsvm_data.txt"
 	# Load and parse the data file into an RDD of LabeledPoint.
 	data = MLUtils.loadLibSVMFile(sc, filename)
 	# Split the data into training and test sets (30% held out for testing)
@@ -246,7 +250,7 @@ def Random_Forest(filename):
 
 def Alternating_Least_Squares(filename):
 	# Load and parse the data
-	filename = "/Users/jacobliu/SparkService/data/ALS_test.data"
+	filename = "/Users/Jacob/SparkService/data/ALS_test.data"
 	data = sc.textFile(filename)
 	ratings = data.map(lambda l: l.split(','))\
 	    .map(lambda l: Rating(int(l[0]), int(l[1]), float(l[2])))
@@ -266,5 +270,31 @@ def Alternating_Least_Squares(filename):
 	# Save and load model
 	#model.save(sc, "target/tmp/myCollaborativeFilter")
 	#sameModel = MatrixFactorizationModel.load(sc, "target/tmp/myCollaborativeFilter")
+
+def Isotonic_Regression(filename):
+	filename = "/Users/Jacob/SparkService/data/sample_isotonic_regression_data.txt"
+
+	data = sc.textFile(filename)
+
+	# Create label, feature, weight tuples from input data with weight set to default value 1.0.
+	parsedData = data.map(lambda line: tuple([float(x) for x in line.split(',')]) + (1.0,))
+
+	# Split data into training (60%) and test (40%) sets.
+	training, test = parsedData.randomSplit([0.6, 0.4], 11)
+
+	# Create isotonic regression model from training data.
+	# Isotonic parameter defaults to true so it is only shown for demonstration
+	model = IsotonicRegression.train(training)
+
+	# Create tuples of predicted and real labels.
+	predictionAndLabel = test.map(lambda p: (model.predict(p[1]), p[0]))
+
+	# Calculate mean squared error between predicted and real labels.
+	meanSquaredError = predictionAndLabel.map(lambda pl: math.pow((pl[0] - pl[1]), 2)).mean()
+	print("Mean Squared Error = " + str(meanSquaredError))
+
+	# Save and load model
+	model.save(sc, "target/tmp/myIsotonicRegressionModel")
+	sameModel = IsotonicRegressionModel.load(sc, "target/tmp/myIsotonicRegressionModel")
 
 main()	
