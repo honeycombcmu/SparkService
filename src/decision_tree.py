@@ -5,6 +5,15 @@ from pyspark.mllib.evaluation import BinaryClassificationMetrics
 
 TRAINING_FILE = sys.argv[1]
 TEST_FILE = sys.argv[2]
+maxBins = 32
+impurity = 'gini'
+maxDepth = 5
+
+if len(sys.argv) > 3:
+	# Means more parameter were typed
+	maxBins = sys.argv[3]
+	impurity = sys.argv[4]
+	maxDepth = sys.argv[5]
 
 # Load and parse the data file into an RDD of LabeledPoint.
 trainingData = MLUtils.loadLibSVMFile(sc, TRAINING_FILE)
@@ -13,7 +22,7 @@ testData = MLUtils.loadLibSVMFile(sc, TEST_FILE)
 # Train a DecisionTree model.
 #  Empty categoricalFeaturesInfo indicates all features are continuous.
 model = DecisionTree.trainClassifier(trainingData, numClasses=2, categoricalFeaturesInfo={},
-                                     impurity='gini', maxDepth=5, maxBins=32)
+                                     impurity=impurity, maxDepth=maxDepth, maxBins=maxBins)
 
 # Evaluate model on test instances and compute test error
 predictions = model.predict(testData.map(lambda x: x.features))
