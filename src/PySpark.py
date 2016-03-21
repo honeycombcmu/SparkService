@@ -2,18 +2,20 @@ import sys
 import os
 import shutil 
 import re
-#ML external modules
+
+#ML modules
 import random_forest
 import isotonic_regression
 import gradient_boostedtrees
+import naive_bayes
+import alternating_least_squares
 
 from pyspark import SparkContext
 from pyspark.mllib.clustering import KMeans
 from pyspark.mllib.evaluation import MulticlassMetrics
-from pyspark.mllib.classification import LogisticRegressionWithLBFGS, NaiveBayes, NaiveBayesModel
+from pyspark.mllib.classification import LogisticRegressionWithLBFGS
 from pyspark.mllib.util import MLUtils
 from pyspark.mllib.linalg import Vectors
-from pyspark.mllib.recommendation import ALS, MatrixFactorizationModel, Rating
 from pyspark.mllib.regression import LabeledPoint, LinearRegressionWithSGD, LinearRegressionModel
 from pyspark.mllib.tree import RandomForest, RandomForestModel
 from pyspark.sql import SQLContext
@@ -62,10 +64,10 @@ def main():
 		gradient_boostedtrees.Gradient_BoostedTrees(loadTrainingFilePath,sc)
 
 	elif model_name == "ALS":
-		Alternating_Least_Squares(loadTrainingFilePath)
+		alternating_least_squares.Alternating_Least_Squares(loadTrainingFilePath, sc)
 
 	elif model_name == "NaiveBayes":
-		Naive_Bayes(loadTrainingFilePath)
+		naive_bayes.Naive_Bayes(loadTrainingFilePath, sc)
 
 	elif model_name == "RandomForest":
 		random_forest.Random_Forest(loadTrainingFilePath, sc)
@@ -198,57 +200,6 @@ def LinearRegression(filename):
 	#model.save(sc, "myModelPath")
 	#sameModel = LinearRegressionModel.load(sc, "myModelPath")
 
-# Naive Bayes helper function:
-def parseLine(line):
-    parts = line.split(',')
-    label = float(parts[0])
-    features = Vectors.dense([float(x) for x in parts[1].split(' ')])
-    return LabeledPoint(label, features)
 
-
-def Naive_Bayes(filename):
-	data = sc.textFile(filename).map(parseLine)
-
-	# Split data aproximately into training (60%) and test (40%)
-	training, test = data.randomSplit([0.6, 0.4], seed=0)
-
-	# Train a naive Bayes model.
-	model = NaiveBayes.train(training, 1.0)
-
-	# Make prediction and test accuracy.
-	predictionAndLabel = test.map(lambda p: (model.predict(p.features), p.label))
-	accuracy = 1.0 * predictionAndLabel.filter(lambda (x, v): x == v).count() / test.count()
-
-	# Output the results:
-	print "***************************************"
-	print 'Accuracy =' + str(accuracy)
-	print "***************************************"
-
-	# Save and load model
-	#model.save(sc, "target/tmp/myNaiveBayesModel")
-	#sameModel = NaiveBayesModel.load(sc, "target/tmp/myNaiveBayesModel")
-
-def Alternating_Least_Squares(filename):
-	# Load and parse the data
-	filename = "/Users/Jacob/SparkService/data/ALS_test.data"
-	data = sc.textFile(filename)
-	ratings = data.map(lambda l: l.split(','))\
-	    .map(lambda l: Rating(int(l[0]), int(l[1]), float(l[2])))
-
-	# Build the recommendation model using Alternating Least Squares
-	rank = 10
-	numIterations = 10
-	model = ALS.train(ratings, rank, numIterations)
-
-	# Evaluate the model on training data
-	testdata = ratings.map(lambda p: (p[0], p[1]))
-	predictions = model.predictAll(testdata).map(lambda r: ((r[0], r[1]), r[2]))
-	ratesAndPreds = ratings.map(lambda r: ((r[0], r[1]), r[2])).join(predictions)
-	MSE = ratesAndPreds.map(lambda r: (r[1][0] - r[1][1])**2).mean()
-	print("Mean Squared Error = " + str(MSE))
-
-	# Save and load model
-	#model.save(sc, "target/tmp/myCollaborativeFilter")
-	#sameModel = MatrixFactorizationModel.load(sc, "target/tmp/myCollaborativeFilter")
 
 main()	
