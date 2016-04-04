@@ -1,0 +1,33 @@
+{
+    "0.0": {
+        "f1measure": 1.0,
+        "recall": 1.0,
+        "precession": 1.0
+    },
+    "1.0": {
+        "f1measure": 1.0,
+        "recall": 1.0,
+        "precession": 1.0
+    },
+    "Recall": 1.0,
+    "LabelNum": 2,
+    "ConfusionMatrix": [
+        [
+            14.0,
+            0.0
+        ],
+        [
+            0.0,
+            24.0
+        ]
+    ],
+    "Precision": 1.0,
+    "TaskId": "12345678",
+    "AlgorithmName": "LogisticRegression",
+    "F1Score": 1.0,
+    "WeightedStats": {
+        "FalsePositiveRate": 0.0,
+        "F1Score": 1.0,
+        "Precision": 1.0
+    }
+}
