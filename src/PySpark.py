@@ -17,6 +17,7 @@ import support_vector_machine
 import Json
 import k_means
 import linear_regression
+import files
 
 from pyspark import SparkContext
 from pyspark.mllib.clustering import KMeans
@@ -129,17 +130,6 @@ def parsePoint(line):
 # 	#model.save(sc, "myModelPath")
 # 	#sameModel = LinearRegressionModel.load(sc, "myModelPath")
 
-def download(localFilePath, hdfsFilePath):
-	#readLocalFile("/Users/jacobliu/SparkService/data/sample_libsvm_data.txt")
-	subprocess.call(["HADOOP_USER_NAME=hdfs","hdfs","dfs","-get",localFilePath, hdfsFilePath])
 
-def upLoad(localFilePath, hdfsFilePath):
-	subprocess.call(["HADOOP_USER_NAME=hdfs","hdfs","dfs","-put",localFilePath,hdfsFilePath])
-
-def deleteFile(hdfsFilePath):
-	#if the directory already exists, delete it
-	ifExisted = subprocess.call(["hdfs","dfs","-test","-d",hdfsFilePath])
-	if ifExisted == 0:
-		subprocess.call(["hdfs","dfs","-rm","-r", hdfsFilePath])
 
 main()	
