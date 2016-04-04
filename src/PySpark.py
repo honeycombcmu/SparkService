@@ -11,6 +11,7 @@ import isotonic_regression
 import gradient_boostedtrees
 import naive_bayes
 import alternating_least_squares
+import logs_reg
 
 import Json
 import k_means
@@ -19,8 +20,6 @@ import linear_regression
 from pyspark import SparkContext
 from pyspark.mllib.clustering import KMeans
 from pyspark.mllib.evaluation import MulticlassMetrics
-from pyspark.mllib.classification import LogisticRegressionWithLBFGS
-from pyspark.mllib.util import MLUtils
 from pyspark.mllib.linalg import Vectors
 from pyspark.mllib.regression import LabeledPoint, LinearRegressionWithSGD, LinearRegressionModel
 from pyspark.mllib.tree import RandomForest, RandomForestModel
@@ -95,24 +94,29 @@ def main():
 		# #df.toJSON().saveAsTextFile(dumpFilePath)
 
 	elif model_name == "LogisticRegression":
+		logs_reg.logsreg(loadTrainingFilePath, sc)
 		# Load training data in LIBSVM format
-		data = MLUtils.loadLibSVMFile(sc, loadTrainingFilePath)
+		# loadTrainingFilePath = '/Users/Jacob/repository/SparkService/data/sample_libsvm_data.txt'
+		# data = MLUtils.loadLibSVMFile(sc, loadTrainingFilePath)
 		
 		
-		# Split data into training (60%) and test (40%)
-		traindata, testdata = data.randomSplit([0.6, 0.4], seed = 11L)
-		traindata.cache()
+		# # Split data into training (60%) and test (40%)
+		# traindata, testdata = data.randomSplit([0.6, 0.4], seed = 11L)
+		# traindata.cache()
 
-		# Load testing data in LIBSVM format
-		#testdata = MLUtils.loadLibSVMFile(sc, loadTestingFilePath)
+		# # Load testing data in LIBSVM format
+		# #testdata = MLUtils.loadLibSVMFile(sc, loadTestingFilePath)
 
-		# Run training algorithm to build the model
-		model = LogisticRegressionWithLBFGS.train(traindata, numClasses=3)
+		# # Run training algorithm to build the model
+		# model = LogisticRegressionWithLBFGS.train(traindata, numClasses=3)
 
-		# Compute raw scores on the test set
-		predictionAndLabels = testdata.map(lambda lp: (float(model.predict(lp.features)), lp.label))
+		# # Compute raw scores on the test set
+		# predictionAndLabels = testdata.map(lambda lp: (float(model.predict(lp.features)), lp.label))
 
-		Json.generateJson("LogisticRegression", "12345678", traindata, predictionAndLabels);
+		# Json.generateJson("LogisticRegression", "12345678", traindata, predictionAndLabels);
+
+		# print 'Completed.'
+
 		# Instantiate metrics object
 		# metrics = MulticlassMetrics(predictionAndLabels)
 
