@@ -12,16 +12,17 @@ import gradient_boostedtrees
 import naive_bayes
 import alternating_least_squares
 import logistic_regression
+import logs_reg
+import support_vector_machine
 
 import Json
 import k_means
 import linear_regression
+import files
 
 from pyspark import SparkContext
 from pyspark.mllib.clustering import KMeans
 from pyspark.mllib.evaluation import MulticlassMetrics
-from pyspark.mllib.classification import LogisticRegressionWithLBFGS
-from pyspark.mllib.util import MLUtils
 from pyspark.mllib.linalg import Vectors
 from pyspark.mllib.regression import LabeledPoint, LinearRegressionWithSGD, LinearRegressionModel
 from pyspark.mllib.tree import RandomForest, RandomForestModel
@@ -101,6 +102,9 @@ def main():
 		# #df.toJSON().saveAsTextFile(dumpFilePath)
 
 
+	# Not tested
+	elif model_name == "svm":
+		support_vector_machine.svm_model(sc)
 
 #Read from local file, sample test read a txt file and output the columns
 def readLocalFile(filename):
@@ -131,17 +135,6 @@ def parsePoint(line):
 # 	#model.save(sc, "myModelPath")
 # 	#sameModel = LinearRegressionModel.load(sc, "myModelPath")
 
-def download(localFilePath, hdfsFilePath):
-	#readLocalFile("/Users/jacobliu/SparkService/data/sample_libsvm_data.txt")
-	subprocess.call(["HADOOP_USER_NAME=hdfs","hdfs","dfs","-get",localFilePath, hdfsFilePath])
 
-def upLoad(localFilePath, hdfsFilePath):
-	subprocess.call(["HADOOP_USER_NAME=hdfs","hdfs","dfs","-put",localFilePath,hdfsFilePath])
-
-def deleteFile(hdfsFilePath):
-	#if the directory already exists, delete it
-	ifExisted = subprocess.call(["hdfs","dfs","-test","-d",hdfsFilePath])
-	if ifExisted == 0:
-		subprocess.call(["hdfs","dfs","-rm","-r", hdfsFilePath])
 
 main()
