@@ -1,0 +1,47 @@
+{
+    "Recall": 0.98,
+    "LabelNum": 3,
+    "Labels": {
+        "0.0": {
+            "F1Measure": 0.9702970297029702,
+            "Recall": 0.9607843137254902,
+            "Precession": 0.98
+        },
+        "1.0": {
+            "F1Measure": 1.0,
+            "Recall": 1.0,
+            "Precession": 1.0
+        },
+        "2.0": {
+            "F1Measure": 0.9696969696969697,
+            "Recall": 0.9795918367346939,
+            "Precession": 0.96
+        }
+    },
+    "ConfusionMatrix": [
+        [
+            49.0,
+            0.0,
+            2.0
+        ],
+        [
+            0.0,
+            50.0,
+            0.0
+        ],
+        [
+            1.0,
+            0.0,
+            48.0
+        ]
+    ],
+    "Precision": 0.98,
+    "TaskId": "1234567890",
+    "AlgorithmName": "LogisticRegression",
+    "F1Score": 0.98,
+    "WeightedStats": {
+        "FalsePositiveRate": 0.009902990299029904,
+        "F1Score": 0.9800020002000198,
+        "Precision": 0.98
+    }
+}

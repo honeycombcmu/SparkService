@@ -12,9 +12,9 @@ def k_means(loadTrainingFilePath, sc):
 	clusters = KMeans.train(parsedData, 3, maxIterations=10, runs=30, initializationMode="random")
 
 	WSSSE = parsedData.map(lambda point: error(point)).reduce(lambda x, y: x + y)
-	
+
 	print("Within Set Sum of Squared Error = " + str(WSSSE))
-	
+
 	#write to file as JSON
 	#res = [('k_means',dumpFilePath, WSSSE)]
 	#rdd = sc.parallelize(res)
@@ -26,3 +26,6 @@ def k_means(loadTrainingFilePath, sc):
 def error(point):
     center = clusters.centers[clusters.predict(point)]
     return sqrt(sum([x**2 for x in (point - center)]))
+
+# if __name__ = "__main__":
+#     k_means(sys.argv)
