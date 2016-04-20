@@ -13,7 +13,6 @@ import naive_bayes
 import alternating_least_squares
 import logistic_regression
 import logs_reg
-import support_vector_machine
 
 import Json
 import k_means

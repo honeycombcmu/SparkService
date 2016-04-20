@@ -1,23 +1,23 @@
 {
     "Recall": 0.88,
     "LabelNum": 3,
-    "Labels": {
-        "0.0": {
+    "Labels": [
+        {
             "F1Measure": 0.8440366972477064,
             "Recall": 0.92,
             "Precision": 0.7796610169491526
         },
-        "1.0": {
+        {
             "F1Measure": 0.98989898989899,
             "Recall": 0.98,
             "Precision": 1.0
         },
-        "2.0": {
+        {
             "F1Measure": 0.8043478260869565,
             "Recall": 0.74,
             "Precision": 0.8809523809523809
         }
-    },
+    ],
     "ConfusionMatrix": [
         [
             46.0,
@@ -36,7 +36,7 @@
         ]
     ],
     "Precision": 0.88,
-    "TaskId": "12345678",
+    "TaskId": "12345",
     "AlgorithmName": "LogisticRegression",
     "F1Score": 0.88,
     "WeightedStats": {

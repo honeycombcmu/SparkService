@@ -20,13 +20,15 @@ def generateJson(AlgorithmName, taskid, traindata, predictionAndLabels):
 	jsonContent['F1Score'] = f1Score
 	jsonContent['ConfusionMatrix'] = confusion_matrix.tolist()
 
-	jsonContent['Labels'] = dict()
+	jsonContent['Labels'] = list()
 	for label in sorted(labels):
-		jsonContent['Labels'][label] = dict()
-		jsonContent['Labels'][label]['Precession'] = metrics.precision(label)
-		jsonContent['Labels'][label]['Recall'] = metrics.recall(label)
-		jsonContent['Labels'][label]['F1Measure'] = metrics.fMeasure(label, beta=1.0)
+		tempList = dict()
+		tempList['Precision'] = metrics.precision(label)
+		tempList['Recall'] = metrics.recall(label)
+		tempList['F1Measure'] = metrics.fMeasure(label, beta=1.0)
 
+		jsonContent['Labels'].append(tempList)
+	
 	jsonContent['WeightedStats'] = dict()
 	jsonContent['WeightedStats']['Precision'] = metrics.weightedRecall
 	jsonContent['WeightedStats']['F1Score'] = metrics.weightedFMeasure()
